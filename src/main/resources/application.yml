@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: cloud-storage
+  jackson:
+    serialization:  
+      write-dates-as-timestamps: false
+      indent-output: false
+    deserialization:
+      fail-on-unknown-properties: false
+    time-zone: UTC
+    default-property-inclusion: non_null
+    locale: en_US
+  mvc:
+    locale: en_US
+    locale-resolver: fixed
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+  messages:
+    basename: ValidationMessages
+server:
+  shutdown: graceful
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+    health:
+      probes:
+        enabled: true
+logging:
+  level:
+    root: INFO
+    org:
+      springframework: INFO
