@@ -1,2 +1,11 @@
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/CloudStorageApplication.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/health/HealthController.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/user/PasswordConfig.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/user/User.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/user/UserController.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/user/UserRepository.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/user/UserService.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/user/UsernameAlreadyExistsException.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/user/dto/LoginRequest.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/user/dto/LoginResponse.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/user/dto/RegisterRequest.java
