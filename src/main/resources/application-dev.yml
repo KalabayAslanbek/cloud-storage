@@ -19,6 +19,10 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: false
     clean-disabled: true
+jwt:
+  secret: "0ygddp+NSZABxVLPwtQrbnuYi/IP9EOw19AnCQi11zxo877eqtqjSudNtUCnV/Ww"
+  expMinutes: 60
+  issuer: "cloud-storage"
 
 management:
   endpoint:
