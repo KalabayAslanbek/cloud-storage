@@ -19,10 +19,18 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: false
     clean-disabled: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
 jwt:
-  secret: "0ygddp+NSZABxVLPwtQrbnuYi/IP9EOw19AnCQi11zxo877eqtqjSudNtUCnV/Ww"
+  secret: "pTnq2hQ9NZGvmCqEd8H9+HfA9swHQxtTnFlEXwRYe6c2FB9hAN/XG8Ujs3kGW2sL2bY3pV5KMUJf0GzT3csGbw=="
   expMinutes: 60
   issuer: "cloud-storage"
+
+storage:
+  root-dir: ./data/storage
 
 management:
   endpoint:
