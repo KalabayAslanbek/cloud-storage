@@ -1,6 +1,6 @@
 package com.kalabay.cloudstorage.file;
 
-import com.kalabay.cloudstorage.file.dto.*;
+import com.kalabay.cloudstorage.file.dto.FileResponse;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
@@ -10,7 +10,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/files")
@@ -24,9 +23,9 @@ public class FileController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public FileResponse upload(@RequestPart("file") MultipartFile file, Authentication auth) {
+    public FileResponse upload(@RequestPart("file") MultipartFile file, Authentication auth, @RequestParam(value = "folderId", required = false) Long folderId) {
         try {
-            StoredFile saved = service.upload(file, auth.getName());
+            StoredFile saved = service.upload(file, auth.getName(), folderId);
             return FileResponse.fromEntity(saved);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -36,8 +35,8 @@ public class FileController {
     }
 
     @GetMapping
-    public List<FileResponse> list(Authentication auth) {
-        return service.list(auth.getName()).stream().map(FileResponse::fromEntity).toList();
+    public List<FileResponse> list(Authentication auth, @RequestParam(value = "folderId", required = false) Long folderId) {
+        return service.list(auth.getName(), folderId).stream().map(FileResponse::fromEntity).toList();
     }
 
     @GetMapping("/{id}")
@@ -46,10 +45,9 @@ public class FileController {
             FileService.FileDownload file = service.getFile(id, auth.getName());
 
             String encodedFilename = URLEncoder.encode(file.filename(), StandardCharsets.UTF_8);
+            MediaType mediaType = file.contentType() != null ? MediaType.parseMediaType(file.contentType()) : MediaType.APPLICATION_OCTET_STREAM;
 
-            return ResponseEntity.ok().contentType(MediaType.parseMediaType(file.contentType() != null ? file.contentType() : MediaType.APPLICATION_OCTET_STREAM_VALUE))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encodedFilename)
-                    .body(file.resource());
+            return ResponseEntity.ok().contentType(mediaType).header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encodedFilename).body(file.resource());
 
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found");
