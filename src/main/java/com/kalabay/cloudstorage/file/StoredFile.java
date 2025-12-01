@@ -1,6 +1,7 @@
 package com.kalabay.cloudstorage.file;
 
 import com.kalabay.cloudstorage.user.User;
+import com.kalabay.cloudstorage.folder.Folder;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -22,6 +23,10 @@ public class StoredFile {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "folder_id")
+    private Folder folder;
 
     @Column(name = "original_name", nullable = false, length = 255)
     private String originalName;

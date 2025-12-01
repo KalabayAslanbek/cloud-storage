@@ -5,6 +5,13 @@
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/file/FileService.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/file/StoredFile.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/file/dto/FileResponse.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/folder/Folder.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/folder/FolderController.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/folder/FolderRepository.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/folder/FolderService.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/folder/dto/CreateFolderRequest.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/folder/dto/FolderResponse.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/folder/dto/FolderTreeNode.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/health/HealthController.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/security/CustomUserDetailsService.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/security/SecurityConfig.java
