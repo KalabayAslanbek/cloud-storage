@@ -1,6 +1,7 @@
 package com.kalabay.cloudstorage.file;
 
 import com.kalabay.cloudstorage.file.dto.FileResponse;
+import com.kalabay.cloudstorage.file.dto.MoveFileRequest;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
@@ -53,6 +54,16 @@ public class FileController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found");
         } catch (IllegalStateException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot read file");
+        }
+    }
+
+    @PatchMapping("/{id}/move")
+    public FileResponse move(@PathVariable Long id, @RequestBody MoveFileRequest request, Authentication auth) {
+        try {
+            var moved = service.move(auth.getName(), id, request.folderId());
+            return FileResponse.fromEntity(moved);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
 

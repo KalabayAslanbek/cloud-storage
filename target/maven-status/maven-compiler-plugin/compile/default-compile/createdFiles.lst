@@ -1,17 +1,12 @@
 com/kalabay/cloudstorage/file/dto/FileResponse.class
-com/kalabay/cloudstorage/file/FileController.class
 com/kalabay/cloudstorage/user/User.class
 com/kalabay/cloudstorage/user/dto/TokenResponse.class
 com/kalabay/cloudstorage/security/SecurityConfig.class
 com/kalabay/cloudstorage/user/UserController.class
 com/kalabay/cloudstorage/security/CustomUserDetailsService.class
 com/kalabay/cloudstorage/security/jwt/JwtService.class
-com/kalabay/cloudstorage/file/FileService$FileDownload.class
-com/kalabay/cloudstorage/folder/FolderController.class
 com/kalabay/cloudstorage/folder/FolderRepository.class
 com/kalabay/cloudstorage/folder/Folder.class
-com/kalabay/cloudstorage/file/FileService.class
-com/kalabay/cloudstorage/folder/FolderService.class
 com/kalabay/cloudstorage/user/dto/LoginRequest.class
 com/kalabay/cloudstorage/user/PasswordConfig.class
 com/kalabay/cloudstorage/user/dto/LoginResponse.class
@@ -22,7 +17,6 @@ com/kalabay/cloudstorage/folder/Folder$FolderBuilder.class
 com/kalabay/cloudstorage/CloudStorageApplication.class
 com/kalabay/cloudstorage/folder/dto/CreateFolderRequest.class
 com/kalabay/cloudstorage/user/User$UserBuilder.class
-com/kalabay/cloudstorage/file/FileRepository.class
 com/kalabay/cloudstorage/folder/dto/FolderResponse.class
 com/kalabay/cloudstorage/user/UsernameAlreadyExistsException.class
 com/kalabay/cloudstorage/user/UserService.class

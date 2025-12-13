@@ -100,5 +100,17 @@ public class FileService {
         files.delete(file);
     }
 
+    @Transactional
+    public StoredFile move(String username, Long fileId, Long folderId) {
+        StoredFile file = files.findByIdAndOwner_Username(fileId, username).orElseThrow(() -> new IllegalArgumentException("File not found"));
+        Folder folder = null;
+        if (folderId != null) {
+            folder = folders.findByIdAndOwner_Username(folderId, username).orElseThrow(() -> new IllegalArgumentException("Folder not found"));
+        }
+
+        file.setFolder(folder);
+        return files.save(file);
+    }
+
     public record FileDownload(Resource resource, String filename, String contentType) {}
 }
