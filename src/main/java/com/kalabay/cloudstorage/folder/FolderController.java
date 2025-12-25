@@ -1,10 +1,6 @@
 package com.kalabay.cloudstorage.folder;
 
-import com.kalabay.cloudstorage.folder.dto.CreateFolderRequest;
-import com.kalabay.cloudstorage.folder.dto.FolderResponse;
-import com.kalabay.cloudstorage.folder.dto.FolderTreeNode;
-import com.kalabay.cloudstorage.folder.dto.MoveFolderRequest;
-import com.kalabay.cloudstorage.folder.dto.RenameFolderRequest;
+import com.kalabay.cloudstorage.folder.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -35,9 +31,12 @@ public class FolderController {
     }
 
     @GetMapping
-    public List<FolderResponse> listChildren(@RequestParam(value = "parentId", required = false) Long parentId, Authentication auth) {
+    public List<FolderResponse> listChildren(@RequestParam(value = "parentId", required = false) Long parentId, @RequestParam(value = "sort", required = false, defaultValue = "createdAt,desc") String sort, Authentication auth) {
         try {
-            return service.listChildren(auth.getName(), parentId).stream().map(FolderResponse::fromEntity).toList();
+            var parsed = parseSort(sort);
+            var list = service.listChildren(auth.getName(), parentId).stream().map(FolderResponse::fromEntity).toList();
+
+            return sortFolders(list, parsed);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -81,4 +80,40 @@ public class FolderController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
+
+    @GetMapping("/{id}/path")
+    public List<FolderPathItem> path(@PathVariable Long id, Authentication auth) {
+        try {
+            return service.getPath(auth.getName(), id);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    private List<FolderResponse> sortFolders(List<FolderResponse> items, ParsedSort sort) {
+        java.util.Comparator<FolderResponse> cmp = switch (sort.field) {
+            case "createdAt" -> java.util.Comparator.comparing(FolderResponse::createdAt, java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder()));
+            case "name" -> java.util.Comparator.comparing(FolderResponse::name, String.CASE_INSENSITIVE_ORDER);
+            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported sort field: " + sort.field);
+        };
+
+        if (!sort.asc) cmp = cmp.reversed();
+        return items.stream().sorted(cmp).toList();
+    }
+
+    private ParsedSort parseSort(String sort) {
+        String[] parts = sort.split(",", 2);
+        String field = parts[0].trim();
+        String dir = parts.length > 1 ? parts[1].trim().toLowerCase() : "asc";
+
+        boolean asc = switch (dir) {
+            case "asc" -> true;
+            case "desc" -> false;
+            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sort direction must be asc|desc");
+        };
+
+        return new ParsedSort(field, asc);
+    }
+
+    private record ParsedSort(String field, boolean asc) {}
 }

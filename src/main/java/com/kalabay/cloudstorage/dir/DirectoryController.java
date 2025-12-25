@@ -25,38 +25,14 @@ public class DirectoryController {
         this.fileService = fileService;
     }
 
-    /**
-     * folderId = null -> root
-     * sort: createdAt,desc (default)
-     *
-     * sort fields:
-     * - createdAt -> folders by createdAt, files by uploadedAt
-     * - name      -> folders by name, files by filename
-     * - size      -> files by sizeBytes; folders fallback to name
-     */
     @GetMapping
-    public DirResponse dir(
-            @RequestParam(value = "folderId", required = false) Long folderId,
-            @RequestParam(value = "sort", required = false, defaultValue = "createdAt,desc") String sort,
-            Authentication auth
-    ) {
+    public DirResponse dir(@RequestParam(value = "folderId", required = false) Long folderId, @RequestParam(value = "sort", required = false, defaultValue = "createdAt,desc") String sort, Authentication auth) {
         String username = auth.getName();
-
-        List<FolderResponse> folders = folderService.listChildren(username, folderId)
-                .stream()
-                .map(FolderResponse::fromEntity)
-                .toList();
-
-        List<FileResponse> files = fileService.list(username, folderId)
-                .stream()
-                .map(FileResponse::fromEntity)
-                .toList();
-
+        List<FolderResponse> folders = folderService.listChildren(username, folderId).stream().map(FolderResponse::fromEntity).toList();
+        List<FileResponse> files = fileService.list(username, folderId).stream().map(FileResponse::fromEntity).toList();
         ParsedSort parsed = parseSort(sort);
-
         folders = sortFolders(folders, parsed);
         files = sortFiles(files, parsed);
-
         return new DirResponse(folderId, folders, files);
     }
 

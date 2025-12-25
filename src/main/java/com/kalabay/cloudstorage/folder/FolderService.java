@@ -2,6 +2,7 @@ package com.kalabay.cloudstorage.folder;
 
 import com.kalabay.cloudstorage.file.FileRepository;
 import com.kalabay.cloudstorage.folder.dto.FolderTreeNode;
+import com.kalabay.cloudstorage.folder.dto.FolderPathItem;
 import com.kalabay.cloudstorage.user.User;
 import com.kalabay.cloudstorage.user.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -153,6 +154,19 @@ public class FolderService {
         if (deleted == 0) {
             throw new IllegalArgumentException("Folder not found");
         }
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<FolderPathItem> getPath(String username, Long folderId) {
+        Folder current = folders.findByIdAndOwner_Username(folderId, username)
+                .orElseThrow(() -> new IllegalArgumentException("Folder not found"));
+
+        java.util.LinkedList<FolderPathItem> path = new java.util.LinkedList<>();
+        while (current != null) {
+            path.addFirst(new FolderPathItem(current.getId(), current.getName()));
+            current = current.getParent(); // parent может быть null (root)
+        }
+        return path;
     }
 
     private void ensureUniqueName(String username, Folder parent, String name) {
