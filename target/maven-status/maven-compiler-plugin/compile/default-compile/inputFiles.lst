@@ -1,5 +1,7 @@
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/CloudStorageApplication.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/advice/GlobalExceptionHandler.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/dir/DirectoryController.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/dir/dto/DirResponse.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/file/FileController.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/file/FileRepository.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/file/FileService.java
@@ -11,6 +13,7 @@
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/folder/FolderRepository.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/folder/FolderService.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/folder/dto/CreateFolderRequest.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/folder/dto/FolderPathItem.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/folder/dto/FolderResponse.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/folder/dto/FolderTreeNode.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/folder/dto/MoveFolderRequest.java
