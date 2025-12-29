@@ -34,7 +34,10 @@ public class FolderController {
     public List<FolderResponse> listChildren(@RequestParam(value = "parentId", required = false) Long parentId, @RequestParam(value = "sort", required = false, defaultValue = "createdAt,desc") String sort, Authentication auth) {
         try {
             var parsed = parseSort(sort);
-            var list = service.listChildren(auth.getName(), parentId).stream().map(FolderResponse::fromEntity).toList();
+            var list = service.listChildren(auth.getName(), parentId)
+                    .stream()
+                    .map(FolderResponse::fromEntity)
+                    .toList();
 
             return sortFolders(list, parsed);
         } catch (IllegalArgumentException e) {
@@ -98,7 +101,9 @@ public class FolderController {
         };
 
         if (!sort.asc) cmp = cmp.reversed();
-        return items.stream().sorted(cmp).toList();
+        return items.stream()
+                .sorted(cmp)
+                .toList();
     }
 
     private ParsedSort parseSort(String sort) {

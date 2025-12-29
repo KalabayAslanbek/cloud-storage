@@ -23,6 +23,13 @@
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/security/SecurityConfig.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/security/jwt/JwtAuthenticationFilter.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/security/jwt/JwtService.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/share/FileShare.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/share/FileShareController.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/share/FileShareRepository.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/share/FileShareService.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/share/PublicShareController.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/share/dto/CreateShareRequest.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/share/dto/ShareResponse.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/user/PasswordConfig.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/user/User.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/user/UserController.java

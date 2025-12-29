@@ -24,7 +24,9 @@ public class FolderService {
         this.folders = folders;
         this.users = users;
         this.files = files;
-        this.storageRoot = Paths.get(rootDir).toAbsolutePath().normalize();
+        this.storageRoot = Paths.get(rootDir)
+                .toAbsolutePath()
+                .normalize();
 
         try {
             Files.createDirectories(this.storageRoot);
@@ -39,16 +41,22 @@ public class FolderService {
             throw new IllegalStateException("Folder name cannot be empty");
         }
 
-        User owner = users.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+        User owner = users.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
 
         Folder parent = null;
         if (parentId != null) {
-            parent = folders.findByIdAndOwner_Username(parentId, username).orElseThrow(() -> new IllegalArgumentException("Parent folder not found"));
+            parent = folders.findByIdAndOwner_Username(parentId, username)
+                    .orElseThrow(() -> new IllegalArgumentException("Parent folder not found"));
         }
 
         ensureUniqueName(username, parent, name);
 
-        Folder folder = Folder.builder().owner(owner) .parent(parent).name(name.trim()).build();
+        Folder folder = Folder.builder()
+                .owner(owner) 
+                .parent(parent)
+                .name(name.trim())
+                .build();
 
         return folders.save(folder);
     }
@@ -58,7 +66,8 @@ public class FolderService {
         if (parentId == null) {
             return folders.findAllByOwner_UsernameAndParentIsNullOrderByCreatedAtAsc(username);
         }
-        folders.findByIdAndOwner_Username(parentId, username).orElseThrow(() -> new IllegalArgumentException("Parent folder not found"));
+        folders.findByIdAndOwner_Username(parentId, username)
+                .orElseThrow(() -> new IllegalArgumentException("Parent folder not found"));
 
         return folders.findAllByOwner_UsernameAndParent_IdOrderByCreatedAtAsc(username, parentId);
     }
@@ -85,7 +94,8 @@ public class FolderService {
             } else {
                 FolderTreeNode parentNode = nodes.get(parentId);
                 if (parentNode != null) {
-                    parentNode.children().add(node);
+                    parentNode.children()
+                            .add(node);
                 }
             }
         });
@@ -99,7 +109,8 @@ public class FolderService {
             throw new IllegalStateException("Folder name cannot be empty");
         }
 
-        Folder folder = folders.findByIdAndOwner_Username(folderId, username).orElseThrow(() -> new IllegalArgumentException("Folder not found"));
+        Folder folder = folders.findByIdAndOwner_Username(folderId, username)
+                .orElseThrow(() -> new IllegalArgumentException("Folder not found"));
         String trimmed = newName.trim();
         if (trimmed.equals(folder.getName())) {
             return folder;
@@ -112,10 +123,12 @@ public class FolderService {
 
     @Transactional
     public Folder move(String username, Long folderId, Long newParentId) {
-        Folder folder = folders.findByIdAndOwner_Username(folderId, username).orElseThrow(() -> new IllegalArgumentException("Folder not found"));
+        Folder folder = folders.findByIdAndOwner_Username(folderId, username)
+                .orElseThrow(() -> new IllegalArgumentException("Folder not found"));
         Folder newParent = null;
         if (newParentId != null) {
-            newParent = folders.findByIdAndOwner_Username(newParentId, username).orElseThrow(() -> new IllegalArgumentException("Target parent folder not found"));
+            newParent = folders.findByIdAndOwner_Username(newParentId, username)
+                    .orElseThrow(() -> new IllegalArgumentException("Target parent folder not found"));
             Folder cursor = newParent;
             while (cursor != null) {
                 if (cursor.getId().equals(folder.getId())) {
@@ -164,7 +177,7 @@ public class FolderService {
         java.util.LinkedList<FolderPathItem> path = new java.util.LinkedList<>();
         while (current != null) {
             path.addFirst(new FolderPathItem(current.getId(), current.getName()));
-            current = current.getParent(); // parent может быть null (root)
+            current = current.getParent();
         }
         return path;
     }

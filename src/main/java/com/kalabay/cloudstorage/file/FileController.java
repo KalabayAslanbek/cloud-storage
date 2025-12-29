@@ -36,8 +36,14 @@ public class FileController {
     }
 
     @GetMapping
-    public List<FileResponse> list(Authentication auth, @RequestParam(value = "folderId", required = false) Long folderId) {
-        return service.list(auth.getName(), folderId).stream().map(FileResponse::fromEntity).toList();
+    public List<FileResponse> list(Authentication auth, @RequestParam(value = "folderId", required = false) Long folderId, @RequestParam(value = "sort", required = false, defaultValue = "createdAt,desc") String sort) {
+        var parsed = parseSort(sort);
+        var list = service.list(auth.getName(), folderId)
+                .stream()
+                .map(FileResponse::fromEntity)
+                .toList();
+
+        return sortFiles(list, parsed);
     }
 
     @GetMapping("/{id}")
@@ -76,4 +82,32 @@ public class FileController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found");
         }
     }
+
+    private List<FileResponse> sortFiles(List<FileResponse> items, ParsedSort sort) {
+        java.util.Comparator<FileResponse> cmp = switch (sort.field) {
+            case "createdAt" -> java.util.Comparator.comparing(FileResponse::uploadedAt, java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder()));
+            case "name" -> java.util.Comparator.comparing(FileResponse::filename, String.CASE_INSENSITIVE_ORDER);
+            case "size" -> java.util.Comparator.comparingLong(FileResponse::sizeBytes);
+            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported sort field: " + sort.field);
+        };
+
+        if (!sort.asc) cmp = cmp.reversed();
+        return items.stream().sorted(cmp).toList();
+    }
+
+    private ParsedSort parseSort(String sort) {
+        String[] parts = sort.split(",", 2);
+        String field = parts[0].trim();
+        String dir = parts.length > 1 ? parts[1].trim().toLowerCase() : "asc";
+
+        boolean asc = switch (dir) {
+            case "asc" -> true;
+            case "desc" -> false;
+            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sort direction must be asc|desc");
+        };
+
+        return new ParsedSort(field, asc);
+    }
+
+    private record ParsedSort(String field, boolean asc) {}
 }
