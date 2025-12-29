@@ -28,7 +28,9 @@ public class FileService {
         this.files = files;
         this.users = users;
         this.folders = folders;
-        this.rootDir = Paths.get(rootDir).toAbsolutePath().normalize();
+        this.rootDir = Paths.get(rootDir)
+                .toAbsolutePath()
+                .normalize();
 
         try {
             Files.createDirectories(this.rootDir);
@@ -43,11 +45,13 @@ public class FileService {
             throw new IllegalArgumentException("Empty file");
         }
 
-        User owner = users.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+        User owner = users.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
 
         Folder folder = null;
         if (folderId != null) {
-            folder = folders.findByIdAndOwner_Username(folderId, username).orElseThrow(() -> new IllegalArgumentException("Folder not found"));
+            folder = folders.findByIdAndOwner_Username(folderId, username)
+                    .orElseThrow(() -> new IllegalArgumentException("Folder not found"));
         }
 
         String storageName = UUID.randomUUID().toString().replace("-", "");
@@ -59,7 +63,14 @@ public class FileService {
             throw new IllegalStateException("Failed to store file", e);
         }
 
-        StoredFile file = StoredFile.builder().owner(owner).folder(folder).originalName(multipart.getOriginalFilename()).storageName(storageName).contentType(multipart.getContentType()).sizeBytes(multipart.getSize()).build();
+        StoredFile file = StoredFile.builder()
+                .owner(owner)
+                .folder(folder)
+                .originalName(multipart.getOriginalFilename())
+                .storageName(storageName)
+                .contentType(multipart.getContentType())
+                .sizeBytes(multipart.getSize())
+                .build();
 
         return files.save(file);
     }
@@ -74,7 +85,8 @@ public class FileService {
 
     @Transactional(readOnly = true)
     public FileDownload getFile(Long id, String username) {
-        StoredFile file = files.findByIdAndOwner_Username(id, username).orElseThrow(() -> new IllegalArgumentException("File not found"));
+        StoredFile file = files.findByIdAndOwner_Username(id, username)
+                .orElseThrow(() -> new IllegalArgumentException("File not found"));
 
         Path path = rootDir.resolve(file.getStorageName());
         try {
@@ -90,7 +102,8 @@ public class FileService {
 
     @Transactional
     public void delete(Long id, String username) {
-        StoredFile file = files.findByIdAndOwner_Username(id, username).orElseThrow(() -> new IllegalArgumentException("File not found"));
+        StoredFile file = files.findByIdAndOwner_Username(id, username)
+                .orElseThrow(() -> new IllegalArgumentException("File not found"));
 
         Path path = rootDir.resolve(file.getStorageName());
         try {
@@ -102,10 +115,12 @@ public class FileService {
 
     @Transactional
     public StoredFile move(String username, Long fileId, Long folderId) {
-        StoredFile file = files.findByIdAndOwner_Username(fileId, username).orElseThrow(() -> new IllegalArgumentException("File not found"));
+        StoredFile file = files.findByIdAndOwner_Username(fileId, username)
+                .orElseThrow(() -> new IllegalArgumentException("File not found"));
         Folder folder = null;
         if (folderId != null) {
-            folder = folders.findByIdAndOwner_Username(folderId, username).orElseThrow(() -> new IllegalArgumentException("Folder not found"));
+            folder = folders.findByIdAndOwner_Username(folderId, username)
+                    .orElseThrow(() -> new IllegalArgumentException("Folder not found"));
         }
 
         file.setFolder(folder);

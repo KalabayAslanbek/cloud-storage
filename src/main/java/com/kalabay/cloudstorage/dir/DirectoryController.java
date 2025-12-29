@@ -28,8 +28,14 @@ public class DirectoryController {
     @GetMapping
     public DirResponse dir(@RequestParam(value = "folderId", required = false) Long folderId, @RequestParam(value = "sort", required = false, defaultValue = "createdAt,desc") String sort, Authentication auth) {
         String username = auth.getName();
-        List<FolderResponse> folders = folderService.listChildren(username, folderId).stream().map(FolderResponse::fromEntity).toList();
-        List<FileResponse> files = fileService.list(username, folderId).stream().map(FileResponse::fromEntity).toList();
+        List<FolderResponse> folders = folderService.listChildren(username, folderId)
+                .stream()
+                .map(FolderResponse::fromEntity)
+                .toList();
+        List<FileResponse> files = fileService.list(username, folderId)
+            .stream()
+            .map(FileResponse::fromEntity)
+            .toList();
         ParsedSort parsed = parseSort(sort);
         folders = sortFolders(folders, parsed);
         files = sortFiles(files, parsed);
@@ -40,12 +46,14 @@ public class DirectoryController {
         Comparator<FolderResponse> cmp = switch (sort.field) {
             case "createdAt" -> Comparator.comparing(FolderResponse::createdAt, Comparator.nullsLast(Comparator.naturalOrder()));
             case "name" -> Comparator.comparing(FolderResponse::name, String.CASE_INSENSITIVE_ORDER);
-            case "size" -> Comparator.comparing(FolderResponse::name, String.CASE_INSENSITIVE_ORDER); // fallback
+            case "size" -> Comparator.comparing(FolderResponse::name, String.CASE_INSENSITIVE_ORDER);
             default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported sort field: " + sort.field);
         };
 
         if (!sort.asc) cmp = cmp.reversed();
-        return items.stream().sorted(cmp).toList();
+        return items.stream()
+                .sorted(cmp)
+                .toList();
     }
 
     private List<FileResponse> sortFiles(List<FileResponse> items, ParsedSort sort) {
@@ -57,7 +65,9 @@ public class DirectoryController {
         };
 
         if (!sort.asc) cmp = cmp.reversed();
-        return items.stream().sorted(cmp).toList();
+        return items.stream()
+                .sorted(cmp)
+                .toList();
     }
 
     private ParsedSort parseSort(String sort) {

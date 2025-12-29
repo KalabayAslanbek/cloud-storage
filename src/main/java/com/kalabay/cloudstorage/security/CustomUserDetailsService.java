@@ -17,7 +17,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var user = repo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return User.withUsername(user.getUsername()).password(user.getPasswordHash()).authorities(List.of(new SimpleGrantedAuthority("ROLE_USER"))).build();
+        var user = repo.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return User.withUsername(user.getUsername()).password(user.getPasswordHash())
+                .authorities(List.of(new SimpleGrantedAuthority("ROLE_USER")))
+                .build();
     }
 }

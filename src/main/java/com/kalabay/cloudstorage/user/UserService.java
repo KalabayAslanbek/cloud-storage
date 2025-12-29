@@ -21,7 +21,10 @@ public class UserService {
         if (repo.existsByUsername(username)) {
             throw new UsernameAlreadyExistsException();
         }
-        User user = User.builder().username(username).passwordHash(encoder.encode(rawPassword)).build();
+        User user = User.builder()
+                .username(username)
+                .passwordHash(encoder.encode(rawPassword))
+                .build();
         try {
             return repo.save(user);
         } catch (DataIntegrityViolationException e) {
@@ -30,6 +33,8 @@ public class UserService {
     }
 
     public boolean login(String username, String rawPassword) {
-        return repo.findByUsername(username).map(u -> encoder.matches(rawPassword, u.getPasswordHash())).orElse(false);
+        return repo.findByUsername(username)
+                .map(u -> encoder.matches(rawPassword, u.getPasswordHash()))
+                .orElse(false);
     }
 }
