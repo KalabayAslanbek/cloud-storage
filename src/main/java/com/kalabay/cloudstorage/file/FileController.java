@@ -1,5 +1,6 @@
 package com.kalabay.cloudstorage.file;
 
+import com.kalabay.cloudstorage.common.exception.BadRequestException;
 import com.kalabay.cloudstorage.file.dto.FileResponse;
 import com.kalabay.cloudstorage.file.dto.MoveFileRequest;
 import org.springframework.core.io.Resource;
@@ -7,9 +8,10 @@ import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
+
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -24,20 +26,23 @@ public class FileController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public FileResponse upload(@RequestPart("file") MultipartFile file, Authentication auth, @RequestParam(value = "folderId", required = false) Long folderId) {
-        try {
-            StoredFile saved = service.upload(file, auth.getName(), folderId);
-            return FileResponse.fromEntity(saved);
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        } catch (IllegalStateException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot store file");
-        }
+    public FileResponse upload(
+            @RequestPart("file") MultipartFile file,
+            Authentication auth,
+            @RequestParam(value = "folderId", required = false) Long folderId
+    ) {
+        StoredFile saved = service.upload(file, auth.getName(), folderId);
+        return FileResponse.fromEntity(saved);
     }
 
     @GetMapping
-    public List<FileResponse> list(Authentication auth, @RequestParam(value = "folderId", required = false) Long folderId, @RequestParam(value = "sort", required = false, defaultValue = "createdAt,desc") String sort) {
+    public List<FileResponse> list(
+            Authentication auth,
+            @RequestParam(value = "folderId", required = false) Long folderId,
+            @RequestParam(value = "sort", required = false, defaultValue = "createdAt,desc") String sort
+    ) {
         var parsed = parseSort(sort);
+
         var list = service.list(auth.getName(), folderId)
                 .stream()
                 .map(FileResponse::fromEntity)
@@ -48,47 +53,37 @@ public class FileController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Resource> download(@PathVariable Long id, Authentication auth) {
-        try {
-            FileService.FileDownload file = service.getFile(id, auth.getName());
+        FileService.FileDownload file = service.getFile(id, auth.getName());
 
-            String encodedFilename = URLEncoder.encode(file.filename(), StandardCharsets.UTF_8);
-            MediaType mediaType = file.contentType() != null ? MediaType.parseMediaType(file.contentType()) : MediaType.APPLICATION_OCTET_STREAM;
+        String encodedFilename = URLEncoder.encode(file.filename(), StandardCharsets.UTF_8);
+        MediaType mediaType = file.contentType() != null
+                ? MediaType.parseMediaType(file.contentType())
+                : MediaType.APPLICATION_OCTET_STREAM;
 
-            return ResponseEntity.ok().contentType(mediaType).header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encodedFilename).body(file.resource());
-
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found");
-        } catch (IllegalStateException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot read file");
-        }
+        return ResponseEntity.ok()
+                .contentType(mediaType)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encodedFilename)
+                .body(file.resource());
     }
 
     @PatchMapping("/{id}/move")
     public FileResponse move(@PathVariable Long id, @RequestBody MoveFileRequest request, Authentication auth) {
-        try {
-            var moved = service.move(auth.getName(), id, request.folderId());
-            return FileResponse.fromEntity(moved);
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+        var moved = service.move(auth.getName(), id, request.folderId());
+        return FileResponse.fromEntity(moved);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id, Authentication auth) {
-        try {
-            service.delete(id, auth.getName());
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found");
-        }
+        service.delete(id, auth.getName());
     }
 
     private List<FileResponse> sortFiles(List<FileResponse> items, ParsedSort sort) {
-        java.util.Comparator<FileResponse> cmp = switch (sort.field) {
-            case "createdAt" -> java.util.Comparator.comparing(FileResponse::uploadedAt, java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder()));
-            case "name" -> java.util.Comparator.comparing(FileResponse::filename, String.CASE_INSENSITIVE_ORDER);
-            case "size" -> java.util.Comparator.comparingLong(FileResponse::sizeBytes);
-            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported sort field: " + sort.field);
+        Comparator<FileResponse> cmp = switch (sort.field) {
+            case "createdAt" -> Comparator.comparing(FileResponse::uploadedAt, Comparator.nullsLast(Comparator.naturalOrder()));
+            case "name" -> Comparator.comparing(FileResponse::filename, String.CASE_INSENSITIVE_ORDER);
+            case "size" -> Comparator.comparingLong(FileResponse::sizeBytes);
+            default -> throw new BadRequestException("Unsupported sort field: " + sort.field);
         };
 
         if (!sort.asc) cmp = cmp.reversed();
@@ -103,7 +98,7 @@ public class FileController {
         boolean asc = switch (dir) {
             case "asc" -> true;
             case "desc" -> false;
-            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sort direction must be asc|desc");
+            default -> throw new BadRequestException("Sort direction must be asc|desc");
         };
 
         return new ParsedSort(field, asc);

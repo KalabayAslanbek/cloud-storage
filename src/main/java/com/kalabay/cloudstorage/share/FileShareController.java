@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -21,7 +21,7 @@ public class FileShareController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ShareResponse create(@PathVariable Long fileId, @RequestBody CreateShareRequest request, Authentication auth) {
+    public ShareResponse create(@PathVariable Long fileId, @Valid @RequestBody CreateShareRequest request, Authentication auth) {
         try {
             var share = service.createShare(auth.getName(), fileId, request.expiresAt());
             return ShareResponse.fromEntity(share);
