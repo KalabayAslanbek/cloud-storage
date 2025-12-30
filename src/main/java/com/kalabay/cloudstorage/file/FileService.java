@@ -1,5 +1,7 @@
 package com.kalabay.cloudstorage.file;
 
+import com.kalabay.cloudstorage.common.exception.BadRequestException;
+import com.kalabay.cloudstorage.common.exception.NotFoundException;
 import com.kalabay.cloudstorage.folder.Folder;
 import com.kalabay.cloudstorage.folder.FolderRepository;
 import com.kalabay.cloudstorage.user.User;
@@ -41,17 +43,22 @@ public class FileService {
 
     @Transactional
     public StoredFile upload(MultipartFile multipart, String username, Long folderId) {
-        if (multipart.isEmpty()) {
-            throw new IllegalArgumentException("Empty file");
+        if (multipart == null || multipart.isEmpty()) {
+            throw new BadRequestException("{file.upload.empty}");
+        }
+
+        String originalName = multipart.getOriginalFilename();
+        if (originalName == null || originalName.isBlank()) {
+            throw new BadRequestException("{file.upload.filename}");
         }
 
         User owner = users.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
         Folder folder = null;
         if (folderId != null) {
             folder = folders.findByIdAndOwner_Username(folderId, username)
-                    .orElseThrow(() -> new IllegalArgumentException("Folder not found"));
+                    .orElseThrow(() -> new NotFoundException("Folder not found"));
         }
 
         String storageName = UUID.randomUUID().toString().replace("-", "");
@@ -66,7 +73,7 @@ public class FileService {
         StoredFile file = StoredFile.builder()
                 .owner(owner)
                 .folder(folder)
-                .originalName(multipart.getOriginalFilename())
+                .originalName(originalName)
                 .storageName(storageName)
                 .contentType(multipart.getContentType())
                 .sizeBytes(multipart.getSize())
@@ -86,7 +93,7 @@ public class FileService {
     @Transactional(readOnly = true)
     public FileDownload getFile(Long id, String username) {
         StoredFile file = files.findByIdAndOwner_Username(id, username)
-                .orElseThrow(() -> new IllegalArgumentException("File not found"));
+                .orElseThrow(() -> new NotFoundException("File not found"));
 
         Path path = rootDir.resolve(file.getStorageName());
         try {
@@ -103,7 +110,7 @@ public class FileService {
     @Transactional
     public void delete(Long id, String username) {
         StoredFile file = files.findByIdAndOwner_Username(id, username)
-                .orElseThrow(() -> new IllegalArgumentException("File not found"));
+                .orElseThrow(() -> new NotFoundException("File not found"));
 
         Path path = rootDir.resolve(file.getStorageName());
         try {
@@ -116,11 +123,11 @@ public class FileService {
     @Transactional
     public StoredFile move(String username, Long fileId, Long folderId) {
         StoredFile file = files.findByIdAndOwner_Username(fileId, username)
-                .orElseThrow(() -> new IllegalArgumentException("File not found"));
+                .orElseThrow(() -> new NotFoundException("File not found"));
         Folder folder = null;
         if (folderId != null) {
             folder = folders.findByIdAndOwner_Username(folderId, username)
-                    .orElseThrow(() -> new IllegalArgumentException("Folder not found"));
+                    .orElseThrow(() -> new NotFoundException("Folder not found"));
         }
 
         file.setFolder(folder);

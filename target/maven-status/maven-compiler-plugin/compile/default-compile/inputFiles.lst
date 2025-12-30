@@ -1,5 +1,11 @@
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/CloudStorageApplication.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/advice/GlobalExceptionHandler.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/common/error/ApiErrorResponse.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/common/exception/ApiException.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/common/exception/BadRequestException.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/common/exception/ConflictException.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/common/exception/NotFoundException.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/common/exception/UnauthorizedException.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/dir/DirectoryController.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/dir/dto/DirResponse.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/file/FileController.java
@@ -20,6 +26,8 @@
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/folder/dto/RenameFolderRequest.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/health/HealthController.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/security/CustomUserDetailsService.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/security/JsonAccessDeniedHandler.java
+/home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/security/JsonAuthenticationEntryPoint.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/security/SecurityConfig.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/security/jwt/JwtAuthenticationFilter.java
 /home/aslan/projects/cloud-storage/src/main/java/com/kalabay/cloudstorage/security/jwt/JwtService.java
