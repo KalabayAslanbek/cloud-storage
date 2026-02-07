@@ -2,7 +2,7 @@ spring:
   application:
     name: cloud-storage
   jackson:
-    serialization:  
+    serialization:
       write-dates-as-timestamps: false
       indent-output: false
     deserialization:
@@ -17,12 +17,14 @@ spring:
     timeout-per-shutdown-phase: 20s
   messages:
     basename: ValidationMessages
+
 server:
   shutdown: graceful
   servlet:
     encoding:
       charset: UTF-8
       force: true
+
 management:
   endpoints:
     web:
@@ -31,8 +33,16 @@ management:
     health:
       probes:
         enabled: true
+
 logging:
   level:
     root: INFO
     org:
       springframework: INFO
+
+jwt:
+  expMinutes: ${JWT_EXP_MINUTES:60}
+  issuer: ${JWT_ISSUER:cloud-storage}
+
+storage:
+  root-dir: ${STORAGE_ROOT_DIR:./data/storage}
