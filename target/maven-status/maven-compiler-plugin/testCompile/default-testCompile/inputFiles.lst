@@ -1,1 +1,3 @@
-/home/aslan/projects/cloud-storage/src/test/java/com/kalabay/cloudstorage/CloudStorageApplicationTests.java
+/home/aslan/projects/cloud-storage/src/test/java/com/kalabay/cloudstorage/file/FileServiceTest.java
+/home/aslan/projects/cloud-storage/src/test/java/com/kalabay/cloudstorage/folder/FolderServiceTest.java
+/home/aslan/projects/cloud-storage/src/test/java/com/kalabay/cloudstorage/web/ApiMockMvcTest.java
