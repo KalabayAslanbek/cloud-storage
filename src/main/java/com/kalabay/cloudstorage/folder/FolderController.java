@@ -9,6 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * REST controller for folder management.
+ *
+ * Provides endpoints to create folders, browse folder children, build a folder tree,
+ * rename/move/delete folders, and resolve a folder path (breadcrumbs).
+ *
+ * All operations are executed in the scope of the authenticated user.
+ */
 @RestController
 @RequestMapping("/api/folders")
 public class FolderController {
@@ -19,6 +27,13 @@ public class FolderController {
         this.service = service;
     }
 
+    /**
+     * Creates a new folder for the authenticated user.
+     *
+     * @param request request body containing folder name and optional parentId
+     * @param auth current authenticated user
+     * @return created folder response
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public FolderResponse create(@Valid @RequestBody CreateFolderRequest request, Authentication auth) {
@@ -26,6 +41,23 @@ public class FolderController {
         return FolderResponse.fromEntity(folder);
     }
 
+    /**
+     * Lists direct child folders for the authenticated user.
+     *
+     * If {@code parentId} is not provided, returns root-level folders.
+     * Supports sorting via {@code sort} parameter in format {@code field,dir}
+     * where {@code dir} is {@code asc} or {@code desc}.
+     *
+     * Supported sort fields:
+     * - {@code createdAt}
+     * - {@code name}
+     *
+     * @param parentId optional parent folder ID (null for root)
+     * @param sort sorting expression (default: {@code createdAt,desc})
+     * @param auth current authenticated user
+     * @return sorted list of child folder responses
+     * @throws IllegalArgumentException if sort field or direction is not supported
+     */
     @GetMapping
     public List<FolderResponse> listChildren(
             @RequestParam(value = "parentId", required = false) Long parentId,
@@ -42,11 +74,25 @@ public class FolderController {
         return sortFolders(list, parsed);
     }
 
+    /**
+     * Builds and returns the full folder tree for the authenticated user.
+     *
+     * @param auth current authenticated user
+     * @return list of root nodes with nested children
+     */
     @GetMapping("/tree")
     public List<FolderTreeNode> tree(Authentication auth) {
         return service.getTree(auth.getName());
     }
 
+    /**
+     * Renames a folder owned by the authenticated user.
+     *
+     * @param id folder ID
+     * @param request request body containing new folder name
+     * @param auth current authenticated user
+     * @return updated folder response
+     */
     @PatchMapping("/{id}")
     public FolderResponse rename(
             @PathVariable Long id,
@@ -57,6 +103,14 @@ public class FolderController {
         return FolderResponse.fromEntity(folder);
     }
 
+    /**
+     * Moves a folder to a new parent folder (or to root if parentId is null).
+     *
+     * @param id folder ID
+     * @param request request body containing destination parentId (nullable)
+     * @param auth current authenticated user
+     * @return updated folder response
+     */
     @PatchMapping("/{id}/move")
     public FolderResponse move(
             @PathVariable Long id,
@@ -67,12 +121,28 @@ public class FolderController {
         return FolderResponse.fromEntity(folder);
     }
 
+    /**
+     * Deletes a folder owned by the authenticated user.
+     *
+     * Deletion is performed recursively (subtree). Physical files belonging to the subtree
+     * are removed from disk before database deletion.
+     *
+     * @param id folder ID
+     * @param auth current authenticated user
+     */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id, Authentication auth) {
         service.delete(auth.getName(), id);
     }
 
+    /**
+     * Returns a breadcrumb-style path from root to the specified folder.
+     *
+     * @param id folder ID
+     * @param auth current authenticated user
+     * @return ordered list of path items (root -> ... -> folder)
+     */
     @GetMapping("/{id}/path")
     public List<FolderPathItem> path(@PathVariable Long id, Authentication auth) {
         return service.getPath(auth.getName(), id);

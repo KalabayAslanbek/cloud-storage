@@ -14,6 +14,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * REST controller for file operations.
+ *
+ * Provides endpoints for uploading, listing, downloading, moving, and deleting files.
+ * All operations are performed within the authenticated user's scope.
+ */
 @RestController
 @RequestMapping("/api/files")
 public class FileController {
@@ -24,6 +30,16 @@ public class FileController {
         this.service = service;
     }
 
+    /**
+     * Uploads a file for the authenticated user.
+     *
+     * Stores the physical file on disk and persists metadata in the database.
+     *
+     * @param file multipart file to upload (required)
+     * @param auth current authenticated user
+     * @param folderId optional destination folder ID; if null, file is uploaded to root
+     * @return uploaded file metadata
+     */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public FileResponse upload(
@@ -35,6 +51,14 @@ public class FileController {
         return FileResponse.fromEntity(saved);
     }
 
+    /**
+     * Lists files for the authenticated user within a folder (or root if folderId is null).
+     *
+     * @param auth current authenticated user
+     * @param folderId optional folder ID; if null, lists files from root
+     * @param sort sorting expression in format "field,dir" (default: "createdAt,desc")
+     * @return list of file metadata
+     */
     @GetMapping
     public List<FileResponse> list(
             Authentication auth,
@@ -51,6 +75,16 @@ public class FileController {
         return sortFiles(list, parsed);
     }
 
+    /**
+     * Downloads a file owned by the authenticated user.
+     *
+     * Returns file content as {@link org.springframework.core.io.Resource} with proper
+     * Content-Disposition header for browser download.
+     *
+     * @param id file ID
+     * @param auth current authenticated user
+     * @return file content response
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Resource> download(@PathVariable Long id, Authentication auth) {
         FileService.FileDownload file = service.getFile(id, auth.getName());
@@ -66,12 +100,28 @@ public class FileController {
                 .body(file.resource());
     }
 
+    /**
+     * Moves a file to another folder (or to root if folderId is null).
+     *
+     * @param id file ID
+     * @param request request body containing destination folderId (nullable)
+     * @param auth current authenticated user
+     * @return updated file metadata
+     */
     @PatchMapping("/{id}/move")
     public FileResponse move(@PathVariable Long id, @RequestBody MoveFileRequest request, Authentication auth) {
         var moved = service.move(auth.getName(), id, request.folderId());
         return FileResponse.fromEntity(moved);
     }
 
+    /**
+     * Deletes a file owned by the authenticated user.
+     *
+     * Removes both the physical file from storage and its metadata record from the database.
+     *
+     * @param id file ID
+     * @param auth current authenticated user
+     */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id, Authentication auth) {

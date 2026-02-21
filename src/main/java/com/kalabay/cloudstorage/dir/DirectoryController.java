@@ -13,6 +13,12 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * REST controller for browsing a user's directory (folders + files) within a folder.
+ *
+ * Returns combined listing of child folders and files for the authenticated user.
+ * Supports sorting by a requested field and direction.
+ */
 @RestController
 @RequestMapping("/api/dir")
 public class DirectoryController {
@@ -25,6 +31,15 @@ public class DirectoryController {
         this.fileService = fileService;
     }
 
+    /**
+     * Returns directory contents (child folders and files) for the authenticated user.
+     *
+     * @param folderId optional folder ID; if null, returns root directory contents
+     * @param sort sorting expression in format "field,dir" where dir is "asc" or "desc"
+     *             (default: "createdAt,desc")
+     * @param auth Spring Security authentication object (username is used as owner identifier)
+     * @return directory response containing folder list and file list
+     */
     @GetMapping
     public DirResponse dir(@RequestParam(value = "folderId", required = false) Long folderId, @RequestParam(value = "sort", required = false, defaultValue = "createdAt,desc") String sort, Authentication auth) {
         String username = auth.getName();
