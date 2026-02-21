@@ -115,7 +115,7 @@ curl -X POST http://localhost:8080/api/files\
 
 ## 📦 Environment Variables (.env.prod)
 
-POSTGRES_DB= POSTGRES_USER= POSTGRES_PASSWORD= DB_PORT= SERVER_PORT=
+POSTGRES_DB=, POSTGRES_USER=, POSTGRES_PASSWORD=, POSTGRES_PORT=,  POSTGRES_VERSION=, DB_PORT=, DB_HOST=, SERVER_PORT=, STORAGE_ROOT_DIR=, JWT_SECRET=, JWT_EXP_MINUTES=, JWT_ISSUER=
 
 ------------------------------------------------------------------------
 
@@ -130,7 +130,6 @@ src/main/resources/db/migration
 ## 📌 Future Improvements
 
 -   Refresh token support
--   File size limitations
 -   Rate limiting
 -   Cloud storage integration (AWS S3)
 -   Swagger / OpenAPI documentation
@@ -139,4 +138,4 @@ src/main/resources/db/migration
 
 ## 👨‍💻 Author
 
-Your Name
+Kalabay Aslanbek
